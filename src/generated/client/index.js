@@ -239,6 +239,14 @@ const config = {
         "fromEnvVar": null,
         "value": "windows",
         "native": true
+      },
+      {
+        "fromEnvVar": null,
+        "value": "windows"
+      },
+      {
+        "fromEnvVar": null,
+        "value": "debian-openssl-1.0.x"
       }
     ],
     "previewFeatures": [],
@@ -265,8 +273,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/client\"\n}\n\ndatasource db {\n  provider = \"mysql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel brands {\n  id     Int    @id @default(autoincrement())\n  name   String @db.VarChar(255)\n  status Int    @default(0)\n\n  products products[] // Relación uno a muchos con productos\n}\n\nmodel categories {\n  id          Int     @id @default(autoincrement())\n  name        String  @db.VarChar(255)\n  description String? @db.VarChar(255)\n  active      Int     @default(0)\n\n  products products[] // Relación uno a muchos con productos\n}\n\nmodel clients {\n  id    Int    @id @default(autoincrement())\n  name  String @unique @db.VarChar(255)\n  phone String @db.VarChar(50)\n\n  created_at DateTime @default(now()) @db.DateTime(6)\n\n  orders orders[]\n}\n\nmodel orders {\n  id           String       @id @default(uuid()) @db.Char(36)\n  client_id    Int\n  total_amount Float\n  paid         Float\n  due          Float\n  status       order_status @default(PENDING)\n  created_at   DateTime     @default(now()) @db.DateTime(6)\n\n  client      clients      @relation(fields: [client_id], references: [id]) // Relación con clients\n  order_items order_item[] // Relación uno a muchos con order_item\n}\n\nenum order_status {\n  PENDING\n  PAID\n  CANCELED\n}\n\nmodel order_item {\n  id         Int    @id @default(autoincrement())\n  order_id   String\n  product_id String\n  name       String @db.VarChar(255)\n  price      Float\n  quantity   Float\n\n  order   orders   @relation(fields: [order_id], references: [id], onDelete: Cascade)\n  product products @relation(fields: [product_id], references: [id])\n}\n\nmodel products {\n  id          String         @id @default(uuid()) @db.Char(36)\n  name        String         @db.VarChar(255)\n  image       String?\n  brand_id    Int\n  category_id Int\n  stock       Float\n  low_stock   Float\n  price       Float\n  status      product_status @default(ACTIVE)\n\n  brand       brands       @relation(fields: [brand_id], references: [id])\n  category    categories   @relation(fields: [category_id], references: [id])\n  order_items order_item[] // Relación uno a muchos con order_item\n}\n\nenum product_status {\n  ACTIVE\n  INACTIVE\n}\n\nmodel users {\n  id       String @id @default(uuid()) @db.Char(36)\n  username String @unique @db.VarChar(255)\n  password String @db.VarChar(255)\n  email    String @db.VarChar(255)\n}\n",
-  "inlineSchemaHash": "e3a220e7bbd1323e70afa2074f5a52752aa866974c515ff97616a162683d2732",
+  "inlineSchema": "generator client {\n  provider      = \"prisma-client-js\"\n  output        = \"../src/generated/client\"\n  binaryTargets = [\"native\", \"windows\", \"debian-openssl-1.0.x\"]\n}\n\ndatasource db {\n  provider = \"mysql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel brands {\n  id     Int    @id @default(autoincrement())\n  name   String @db.VarChar(255)\n  status Int    @default(0)\n\n  products products[] // Relación uno a muchos con productos\n}\n\nmodel categories {\n  id          Int     @id @default(autoincrement())\n  name        String  @db.VarChar(255)\n  description String? @db.VarChar(255)\n  active      Int     @default(0)\n\n  products products[] // Relación uno a muchos con productos\n}\n\nmodel clients {\n  id    Int    @id @default(autoincrement())\n  name  String @unique @db.VarChar(255)\n  phone String @db.VarChar(50)\n\n  created_at DateTime @default(now()) @db.DateTime(6)\n\n  orders orders[]\n}\n\nmodel orders {\n  id           String       @id @default(uuid()) @db.Char(36)\n  client_id    Int\n  total_amount Float\n  paid         Float\n  due          Float\n  status       order_status @default(PENDING)\n  created_at   DateTime     @default(now()) @db.DateTime(6)\n\n  client      clients      @relation(fields: [client_id], references: [id]) // Relación con clients\n  order_items order_item[] // Relación uno a muchos con order_item\n}\n\nenum order_status {\n  PENDING\n  PAID\n  CANCELED\n}\n\nmodel order_item {\n  id         Int    @id @default(autoincrement())\n  order_id   String\n  product_id String\n  name       String @db.VarChar(255)\n  price      Float\n  quantity   Float\n\n  order   orders   @relation(fields: [order_id], references: [id], onDelete: Cascade)\n  product products @relation(fields: [product_id], references: [id])\n}\n\nmodel products {\n  id          String         @id @default(uuid()) @db.Char(36)\n  name        String         @db.VarChar(255)\n  image       String?\n  brand_id    Int\n  category_id Int\n  stock       Float\n  low_stock   Float\n  price       Float\n  status      product_status @default(ACTIVE)\n\n  brand       brands       @relation(fields: [brand_id], references: [id])\n  category    categories   @relation(fields: [category_id], references: [id])\n  order_items order_item[] // Relación uno a muchos con order_item\n}\n\nenum product_status {\n  ACTIVE\n  INACTIVE\n}\n\nmodel users {\n  id       String @id @default(uuid()) @db.Char(36)\n  username String @unique @db.VarChar(255)\n  password String @db.VarChar(255)\n  email    String @db.VarChar(255)\n}\n",
+  "inlineSchemaHash": "90355e010b25a98d3ebac99ef87b5e1d5e25fb8b83a1c5182d6f627a2d8b7ace",
   "copyEngine": true
 }
 
@@ -307,6 +315,10 @@ Object.assign(exports, Prisma)
 // file annotations for bundling tools to include these files
 path.join(__dirname, "query_engine-windows.dll.node");
 path.join(process.cwd(), "src/generated/client/query_engine-windows.dll.node")
+
+// file annotations for bundling tools to include these files
+path.join(__dirname, "libquery_engine-debian-openssl-1.0.x.so.node");
+path.join(process.cwd(), "src/generated/client/libquery_engine-debian-openssl-1.0.x.so.node")
 // file annotations for bundling tools to include these files
 path.join(__dirname, "schema.prisma");
 path.join(process.cwd(), "src/generated/client/schema.prisma")
