@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model brands {
+  id     Int    @id @default(autoincrement())
+  name   String @db.VarChar(255)
+  status Int    @default(0)
+
+  products products[] // Relación uno a muchos con productos
+}
+
+model categories {
+  id          Int     @id @default(autoincrement())
+  name        String  @db.VarChar(255)
+  description String? @db.VarChar(255)
+  active      Int     @default(0)
+
+  products products[] // Relación uno a muchos con productos
+}
+
+model clients {
+  id    Int    @id @default(autoincrement())
+  name  String @unique @db.VarChar(255)
+  phone String @db.VarChar(50)
+
+  created_at DateTime @default(now()) @db.DateTime(6)
+
+  orders orders[]
+}
+
+model orders {
+  id           String           @id @default(uuid()) @db.Char(36)
+  client_id    Int
+  total_amount Float
+  paid         Float
+  due          Float
+  status       order_status @default(PENDING)
+  created_at   DateTime     @default(now()) @db.DateTime(6)
+
+  client      clients      @relation(fields: [client_id], references: [id]) // Relación con clients
+  order_items order_item[] // Relación uno a muchos con order_item
+}
+
+enum order_status {
+  PENDING
+  PAID
+  CANCELED
+}
+
+model order_item {
+  id         Int    @id @default(autoincrement())
+  order_id   String
+  product_id String
+  name       String @db.VarChar(255)
+  price      Float
+  quantity   Float
+
+  order   orders   @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  product products @relation(fields: [product_id], references: [id])
+}
+
+model products {
+  id          String @id @default(uuid()) @db.Char(36)
+  name        String         @db.VarChar(255)
+  image       String?
+  brand_id    Int
+  category_id Int
+  stock       Float
+  low_stock   Float
+  price       Float
+  status      product_status @default(ACTIVE)
+
+  brand       brands       @relation(fields: [brand_id], references: [id])
+  category    categories   @relation(fields: [category_id], references: [id])
+  order_items order_item[] // Relación uno a muchos con order_item
+}
+
+enum product_status {
+  ACTIVE
+  INACTIVE
+}
+
+model users {
+  id       String @id @default(uuid()) @db.Char(36)
+  username String @unique @db.VarChar(255)
+  password String @db.VarChar(255)
+  email    String @db.VarChar(255)
+}

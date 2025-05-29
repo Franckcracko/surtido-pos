@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Categoría Nueva</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="/css/output.css" rel="stylesheet">
+  <script src="/js/sidebar.js"></script>
+  <script src="/js/category-form.js"></script>
+</head>
+
+<body>
+  <div class="flex h-screen bg-gray-100">
+    <%- include('components/sidebar', {username:user.username}) %>
+
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <!-- Top Navigation -->
+      <%- include('components/top-navigation') %>
+
+      <!-- Main Content -->
+      <main class="flex-1 overflow-y-auto bg-gray-100 p-4 md:p-6">
+        <div class="bg-white rounded-lg shadow p-6 mt-8">
+          <h2 class="text-lg font-medium text-gray-900 mb-4">Agregar nueva categoría</h2>
+          <form class="space-y-4 md:space-y-6" id="category-form">
+            <div>
+              <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nombre categoría *</label>
+              <input type="text" name="name" id="name" class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-red-600 focus:border-red-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required="">
+            </div>
+            <div>
+              <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Descripción</label>
+              <textarea name="description" id="description" class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-red-600 focus:border-red-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></textarea>
+            </div>
+            <span></span>
+            <button type="submit" class="w-full text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">Crear</button>
+          </form>
+        </div>
+      </main>
+    </div>
+  </div>
+</body>

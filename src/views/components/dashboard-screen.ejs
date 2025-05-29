@@ -1,0 +1,133 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
+    <div class="flex items-center space-x-2">
+      <span class="text-sm text-gray-500">Ultima actualización: <%= new Date().toLocaleString() %></span>
+      <button id="reload-btn" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-800 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-800">
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- {/* Stats Cards */} -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div class="bg-white rounded-lg shadow p-5 border-l-4 border-green-500">
+      <div class="flex justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-500">Ventas de Hoy</p>
+          <p class="text-2xl font-bold text-gray-900"><%= totalSales %></p>
+        </div>
+        <div class="p-2 bg-green-100 rounded-full">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6 text-green-500">
+            <line x1="12" x2="12" y1="2" y2="22" />
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-5 border-l-4 border-blue-500">
+      <div class="flex justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-500">Total de Pedidos</p>
+          <p class="text-2xl font-bold text-gray-900"><%= totalOrders %></p>
+        </div>
+        <div class="p-2 bg-blue-100 rounded-full">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6 text-blue-500">
+            <circle cx="8" cy="21" r="1" />
+            <circle cx="19" cy="21" r="1" />
+            <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-5 border-l-4 border-purple-500">
+      <div class="flex justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-500">Nuevos Clientes</p>
+          <p class="text-2xl font-bold text-gray-900"><%= totalClients %></p>
+        </div>
+        <div class="p-2 bg-purple-100 rounded-full">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6 text-purple-500">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+            <path d="M16 3.128a4 4 0 0 1 0 7.744" />
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+            <circle cx="9" cy="7" r="4" />
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- {/* Charts & Recent Activity */} -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="lg:col-span-3 bg-white rounded-lg shadow p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-medium text-gray-900">Resumen de ventas</h2>
+        <div class="flex items-center space-x-2">
+          <button class="px-3 py-1 text-xs rounded-md bg-red-800 text-white font-medium" id="daily">Día</button>
+          <button class="px-3 py-1 text-xs rounded-md bg-gray-100 text-gray-800 font-medium" id="weekly">Semana</button>
+          <button class="px-3 py-1 text-xs rounded-md bg-gray-100 text-gray-800 font-medium" id="monthly">Mes</button>
+        </div>
+      </div>
+      <div id="column-chart"></div>
+
+    </div>
+  </div>
+
+  <!-- {/* Top Selling Products */} -->
+  <div class="bg-white rounded-lg shadow overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-medium text-gray-900">Productos Mas Vendidos</h2>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Producto
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Categoría
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Precio
+            </th>
+            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Unidades Vendidas
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% topSellingProducts.forEach(function(product){ %>
+          <tr>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center">
+                <div class="h-10 w-10 flex-shrink-0 bg-red-100 rounded-md flex items-center justify-center">
+                  <img src="/uploads/<%= product.image %>" alt="<%= product.name %>" class="h-10 w-10 rounded-md" />
+                </div>
+                <div class="ml-4">
+                  <div class="text-sm font-medium text-gray-900"><%= product.name %></div>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                <%= product.category.name %>
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-900">$<%= product.price %></div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+              <div class="text-sm text-gray-900"><%= product.quantity %></div>
+            </td>
+          </tr>
+          <% }); %>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
