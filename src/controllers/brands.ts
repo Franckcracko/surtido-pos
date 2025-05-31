@@ -38,12 +38,12 @@ export const getBrandById = async (req: Request, res: Response) => {
   }
 }
 
-export const updateBrandStatus = async (req: Request, res: Response) => {
+export const updateBrand = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { status } = req.body;
+  const { status, name } = req.body;
 
   try {
-    const brand = await BrandModel.updateStatus(Number(id), { status });
+    const brand = await BrandModel.update(Number(id), { status, name });
 
     res.status(200).json(brand);
   } catch (error: any) {

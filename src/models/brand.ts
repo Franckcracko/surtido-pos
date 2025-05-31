@@ -1,10 +1,11 @@
 import { prisma } from "../lib/prisma.js"
+import { validateBrand, validatePartialBrand } from "../schemas/brand.js"
 
 export class BrandModel {
   static async create({ name }: { name: string }) {
-    if (!name) throw new Error('Name is required')
+    const { error } = validateBrand({ name })
 
-    if (name.length < 3) throw new Error('Name must be at least 3 characters long')
+    if (error) throw new Error(error.message)
 
     const brand = await prisma.brands.findFirst({ where: { name } })
     if (brand) throw new Error('Brand already exists')
@@ -20,7 +21,6 @@ export class BrandModel {
   }
 
   static async getAll(name?: string) {
-
     const brands = await prisma.brands.findMany({
       orderBy: {
         name: 'asc'
@@ -44,18 +44,24 @@ export class BrandModel {
     return brand
   }
 
-  static async updateStatus(id: number, { status }: { status: number }) {
+  static async update(id: number, data: any) {
+    const { data: { name, status }, error } = validatePartialBrand(data)
+
+    if (error) throw new Error(error.message)
+
     const brand = await prisma.brands.findUnique({ where: { id } })
     if (!brand) throw new Error('Brand not found')
 
-    if (brand.status === status) throw new Error('Brand already has this status')
-
-    if (status !== 0 && status !== 1) throw new Error('Invalid status')
+    if (name) {
+      const existingBrand = await prisma.brands.findFirst({ where: { name } })
+      if (existingBrand && existingBrand.id !== id) throw new Error('Brand with this name already exists')
+    }
 
     const updatedBrand = await prisma.brands.update({
       where: { id },
       data: {
-        status,
+        name,
+        status
       }
     })
 

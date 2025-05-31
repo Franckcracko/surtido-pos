@@ -196,14 +196,14 @@
                     <!-- Modal body -->
                     <form class="p-4 md:p-5 text-left update-product-form space-y-4" data-id="<%= product.id %>">
                       <div>
-                        <label htmlFor="name" class="block text-sm font-medium text-gray-700">
+                        <label for="name" class="block text-sm font-medium text-gray-700">
                           Nombre del Producto
                         </label>
                         <input value="<%= product.name %>" type="text" name="name" id="name" class="p-2 mt-1 focus:ring-red-800 focus:border-red-800 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" required="" />
                       </div>
                       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label htmlFor="category" class="block text-sm font-medium text-gray-700">
+                          <label for="category" class="block text-sm font-medium text-gray-700">
                             Categorías
                           </label>
                           <select id="category" name="category" class="p-2 mt-1 focus:ring-red-800 focus:border-red-800 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" required="">
@@ -214,7 +214,7 @@
                           </select>
                         </div>
                         <div>
-                          <label htmlFor="brand" class="block text-sm font-medium text-gray-700">
+                          <label for="brand" class="block text-sm font-medium text-gray-700">
                             Proveedor
                           </label>
                           <select id="brand" name="brand" class="p-2 mt-1 focus:ring-red-800 focus:border-red-800 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" required="">
@@ -227,13 +227,13 @@
                       </div>
                       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label htmlFor="price" class="block text-sm font-medium text-gray-700">
+                          <label for="price" class="block text-sm font-medium text-gray-700">
                             Precio ($)
                           </label>
                           <input value="<%= product.price %>" type="number" name="price" id="price" step="0.01" class="p-2 mt-1 focus:ring-red-800 focus:border-red-800 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" required="" />
                         </div>
                         <div>
-                          <label htmlFor="stock" class="block text-sm font-medium text-gray-700">
+                          <label for="stock" class="block text-sm font-medium text-gray-700">
                             Stock disponible
                           </label>
                           <input value="<%= product.stock %>" type="number" step="0.01" name="stock" id="stock" class="p-2 mt-1 focus:ring-red-800 focus:border-red-800 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" required="" />
@@ -245,7 +245,7 @@
                           <input value="<%= product.low_stock %>" type="number" step="0.01" name="low-stock" id="low-stock" class="p-2 mt-1 focus:ring-red-800 focus:border-red-800 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" required="" />
                         </div>
                         <div>
-                          <label htmlFor="status" class="block text-sm font-medium text-gray-700">
+                          <label for="status" class="block text-sm font-medium text-gray-700">
                             Status
                           </label>
                           <select id="status" name="status" class="p-2 mt-1 focus:ring-red-800 focus:border-red-800 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
@@ -295,13 +295,13 @@
     <form class="space-y-4" id="product-form">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-          <label htmlFor="name" class="block text-sm font-medium text-gray-700">
+          <label for="name" class="block text-sm font-medium text-gray-700">
             Nombre del Producto
           </label>
           <input type="text" name="name" id="name" class="p-2 mt-1 focus:ring-red-800 focus:border-red-800 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" required="" />
         </div>
         <div>
-          <label htmlFor="category" class="block text-sm font-medium text-gray-700">
+          <label for="category" class="block text-sm font-medium text-gray-700">
             Categorías
           </label>
           <select id="category" name="category" class="p-2 mt-1 focus:ring-red-800 focus:border-red-800 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" required="">
@@ -312,7 +312,7 @@
           </select>
         </div>
         <div>
-          <label htmlFor="brand" class="block text-sm font-medium text-gray-700">
+          <label for="brand" class="block text-sm font-medium text-gray-700">
             Proveedor
           </label>
           <select id="brand" name="brand" class="p-2 mt-1 focus:ring-red-800 focus:border-red-800 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" required="">
@@ -325,13 +325,13 @@
       </div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-          <label htmlFor="price" class="block text-sm font-medium text-gray-700">
+          <label for="price" class="block text-sm font-medium text-gray-700">
             Precio ($)
           </label>
           <input type="number" name="price" id="price" step="0.01" class="p-2 mt-1 focus:ring-red-800 focus:border-red-800 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" required="" />
         </div>
         <div>
-          <label htmlFor="stock" class="block text-sm font-medium text-gray-700">
+          <label for="stock" class="block text-sm font-medium text-gray-700">
             Stock disponible
           </label>
           <input type="number" step="0.01" name="stock" id="stock" class="p-2 mt-1 focus:ring-red-800 focus:border-red-800 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" required="" />

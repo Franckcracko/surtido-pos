@@ -1,13 +1,13 @@
 document.addEventListener('DOMContentLoaded', function () {
   const $$ = (el) => document.querySelectorAll(el);
   const $ = (el) => document.querySelector(el);
-  
+
   const $brandForm = $('#brand-form');
-  
+
   $brandForm?.addEventListener('submit', (e) => {
     e.preventDefault();
     const name = $('#name').value;
-  
+
     fetch('/api/brands', {
       method: 'POST',
       headers: {
@@ -19,11 +19,10 @@ document.addEventListener('DOMContentLoaded', function () {
         window.location.reload();
         return;
       }
-  
+
       alert('Error al crear el proveedor');
     });
   });
-
 
   $$('.delete-brand-btn').forEach((button) => {
     button.addEventListener('click', async (e) => {
@@ -34,7 +33,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
       const confirmDelete = confirm(
         '¿Estás seguro de que deseas eliminar este proveedor?',
-        'SOLO ELIMINAR SI NO TIENES PRODUCTOS ASIGNADOS A ESTE PROVEEDOR',
       );
       if (!confirmDelete) return;
 
@@ -55,6 +53,32 @@ document.addEventListener('DOMContentLoaded', function () {
         console.error(err);
         alert('Ocurrió un error al intentar eliminar el proveedor');
       }
+    });
+  });
+
+  $$('.brand-update-form').forEach((form) => {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const brandId = form.dataset.id;
+      const status = !!form.querySelector('#status').value
+        ? +form.querySelector('#status').value
+        : undefined;
+      const name = form.querySelector('#name').value;
+      fetch(`/api/brands/${brandId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status, name }),
+      }).then((res) => {
+        if (res.ok) {
+          window.location.reload();
+          return;
+        }
+
+        alert('Error al actualizar el proveedor');
+      });
     });
   });
 });
