@@ -59,3 +59,14 @@ export const getProductByCategory = async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 }
+
+export const deleteProduct = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const product = await ProductModel.delete(id);
+    res.status(200).json(product);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+}

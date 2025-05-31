@@ -11,7 +11,7 @@ export class CategoryModel {
     const { error } = categorySchema.safeParse({ name, description })
     if (error) throw new Error(error.message)
 
-    const category = await prisma.categories.findFirst({ where: { name } })
+    const category = await prisma.categories.findFirst({ where: { name, deleted: false } })
     if (category) throw new Error('Category already exists')
 
     const { id } = await prisma.categories.create({
@@ -34,7 +34,10 @@ export class CategoryModel {
       orderBy: {
         name: 'asc'
       },
-      where,
+      where: {
+        deleted: false,
+        ...where
+      },
       include: {
         products: true
       }
@@ -46,7 +49,8 @@ export class CategoryModel {
   static async getAllActive() {
     const categories = await prisma.categories.findMany({
       where: {
-        active: 1
+        active: 1,
+        deleted: false
       },
       orderBy: {
         name: 'asc'
@@ -68,9 +72,7 @@ export class CategoryModel {
 
     if (!category) throw new Error('Category not found')
 
-    if (category.products.length > 0) throw new Error('Category has products')
-
-    await prisma.categories.delete({ where: { id } })
+    await prisma.categories.update({ where: { id }, data: { deleted: true } })
   }
 
   static async updateStatus(id: number, { status }: { status: number }) {

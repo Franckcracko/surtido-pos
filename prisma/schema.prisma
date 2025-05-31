@@ -8,9 +8,10 @@ datasource db {
 }
 
 model brands {
-  id     Int    @id @default(autoincrement())
-  name   String @db.VarChar(255)
-  status Int    @default(0)
+  id      Int     @id @default(autoincrement())
+  name    String  @db.VarChar(255)
+  status  Int     @default(0)
+  deleted Boolean @default(false)
 
   products products[] // Relación uno a muchos con productos
 }
@@ -20,14 +21,16 @@ model categories {
   name        String  @db.VarChar(255)
   description String? @db.VarChar(255)
   active      Int     @default(0)
+  deleted     Boolean @default(false)
 
   products products[] // Relación uno a muchos con productos
 }
 
 model clients {
-  id    Int    @id @default(autoincrement())
-  name  String @unique @db.VarChar(255)
-  phone String @db.VarChar(50)
+  id      Int     @id @default(autoincrement())
+  name    String  @db.VarChar(255)
+  phone   String  @db.VarChar(50)
+  deleted Boolean @default(false)
 
   created_at DateTime @default(now()) @db.DateTime(6)
 
@@ -35,12 +38,13 @@ model clients {
 }
 
 model orders {
-  id           String           @id @default(uuid()) @db.Char(36)
+  id           String       @id @default(uuid()) @db.Char(36)
   client_id    Int
   total_amount Float
   paid         Float
   due          Float
   status       order_status @default(PENDING)
+  deleted      Boolean      @default(false)
   created_at   DateTime     @default(now()) @db.DateTime(6)
 
   client      clients      @relation(fields: [client_id], references: [id]) // Relación con clients
@@ -66,7 +70,7 @@ model order_item {
 }
 
 model products {
-  id          String @id @default(uuid()) @db.Char(36)
+  id          String         @id @default(uuid()) @db.Char(36)
   name        String         @db.VarChar(255)
   image       String?
   brand_id    Int
@@ -75,6 +79,7 @@ model products {
   low_stock   Float
   price       Float
   status      product_status @default(ACTIVE)
+  deleted     Boolean        @default(false)
 
   brand       brands       @relation(fields: [brand_id], references: [id])
   category    categories   @relation(fields: [category_id], references: [id])

@@ -11,7 +11,7 @@ export class ClientModel {
     const { error } = clientSchema.safeParse({ name, phone })
     if (error) throw new Error(error.message)
 
-    const client = await prisma.clients.findFirst({ where: { name } })
+    const client = await prisma.clients.findFirst({ where: { name, deleted: false } })
     if (client) throw new Error('Client already exists')
 
     const { id } = await prisma.clients.create({
@@ -26,7 +26,20 @@ export class ClientModel {
 
   static async getAll(page: number, take: number, name?: string) {
     // if (page < 1 || take < 1) throw new Error('Invalid page or take value')
-
+    const where: any = name ? {
+      OR: [
+        {
+          name: {
+            contains: name,
+          }
+        },
+        {
+          phone: {
+            contains: name,
+          }
+        }
+      ]
+    } : {}
     const clients = await prisma.clients.findMany({
       // take,
       orderBy: {
@@ -36,20 +49,10 @@ export class ClientModel {
         orders: true
       },
       // skip: (page - 1) * take,
-      where: name ? {
-        OR: [
-          {
-            name: {
-              contains: name,
-            }
-          },
-          {
-            phone: {
-              contains: name,
-            }
-          }
-        ]
-      } : undefined,
+      where: {
+        deleted: false,
+        ...where
+      },
     })
 
     return {
@@ -66,6 +69,9 @@ export class ClientModel {
       },
       include: {
         orders: true
+      },
+      where: {
+        deleted: false
       }
     })
 
@@ -83,13 +89,13 @@ export class ClientModel {
     const client = await prisma.clients.findUnique({ where: { id } })
     if (!client) throw new Error('Client not found')
 
-    await prisma.clients.delete({ where: { id } })
+    await prisma.clients.update({ where: { id }, data: { deleted: true } })
 
     return client
   }
 
   static async countTotalClients() {
-    const totalClients = await prisma.clients.count()
+    const totalClients = await prisma.clients.count({ where: { deleted: false } })
     return totalClients
   }
 
@@ -105,12 +111,23 @@ export class ClientModel {
     const client = await prisma.clients.findUnique({ where: { id } })
     if (!client) throw new Error('Client not found')
 
-    const existingClient = await prisma.clients.findFirst({ where: { name: newClient.name, id: { not: id } } })
-    if (existingClient) throw new Error('Client with this name already exists')
+    const newClientData: any = {}
+
+    if (newClient.name !== client.name) {
+      const existingClient = await prisma.clients.findFirst({ where: { name: newClient.name, deleted: false, id: { not: id } } })
+      if (existingClient) throw new Error('Client with this name already exists')
+      newClientData.name = newClient.name
+    }
+
+    if (newClient.phone !== client.phone) {
+      const existingClient = await prisma.clients.findFirst({ where: { phone: newClient.phone, deleted: false, id: { not: id } } })
+      if (existingClient) throw new Error('Client with this phone already exists')
+      newClientData.phone = newClient.phone
+    }
 
     await prisma.clients.update({
       where: { id },
-      data: { name: newClient.name, phone: newClient.phone }
+      data: newClientData
     })
 
     return { message: "Client updated successfully" }

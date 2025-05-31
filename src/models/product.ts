@@ -11,7 +11,13 @@ export class ProductModel {
 
     const { name, price, categoryId, brandId, stock, lowStock, image } = parsedData
 
-    const product = await prisma.products.findFirst({ where: { AND: [{ name }, { category_id: categoryId }] } })
+    const existingCategory = await prisma.categories.findUnique({ where: { id: categoryId, deleted: false } })
+    if (!existingCategory) throw new Error('Category not found')
+
+    const existingBrand = await prisma.brands.findUnique({ where: { id: brandId, deleted: false } })
+    if (!existingBrand) throw new Error('Brand not found')
+
+    const product = await prisma.products.findFirst({ where: { AND: [{ name }, { category_id: categoryId }, { deleted: false }] } })
     if (product) throw new Error('Product already exists')
 
     const { id } = await prisma.products.create({
@@ -44,7 +50,7 @@ export class ProductModel {
 
     if (name && name !== product.name) {
       const existingProduct = await prisma.products.findFirst({
-        where: { AND: [{ name }, { category_id: categoryId }] }
+        where: { AND: [{ name }, { category_id: categoryId }, { deleted: false }] }
       })
       if (existingProduct) throw new Error('Product with this name already exists in the same category')
     }
@@ -54,12 +60,12 @@ export class ProductModel {
     }
 
     if (categoryId && categoryId !== product.category_id) {
-      const existingCategory = await prisma.categories.findUnique({ where: { id: categoryId } })
+      const existingCategory = await prisma.categories.findUnique({ where: { id: categoryId, deleted: false } })
       if (!existingCategory) throw new Error('Category not found')
     }
 
     if (brandId && brandId !== product.brand_id) {
-      const existingBrand = await prisma.brands.findUnique({ where: { id: brandId } })
+      const existingBrand = await prisma.brands.findUnique({ where: { id: brandId, deleted: false } })
       if (!existingBrand) throw new Error('Brand not found')
     }
 
@@ -87,23 +93,27 @@ export class ProductModel {
   static async getAll(page: number, take: number, name?: string, category?: string) {
     if (page < 1 || take < 1) throw new Error('Invalid page or take value')
     const where: any = {}
+
     if (name) {
       where.name = {
         contains: name,
       }
     }
+
     if (category && category !== 'all' && !isNaN(+category)) {
-      console.log(category)
       where.category_id = +category
     }
-    console.log(`Fetching products with page: ${page}, take: ${take}, name: ${name}, category: ${category}`)
+
     const products = await prisma.products.findMany({
       take,
       orderBy: {
         name: 'asc'
       },
       skip: (page - 1) * take,
-      where,
+      where: {
+        deleted: false,
+        ...where
+      },
       include: {
         category: true,
         brand: true
@@ -130,7 +140,10 @@ export class ProductModel {
       where.status = status
     }
     const products = await prisma.products.findMany({
-      where
+      where: {
+        deleted: false,
+        ...where,
+      }
     })
 
     return products
@@ -141,7 +154,7 @@ export class ProductModel {
 
     if (!product) throw new Error('Product not found')
 
-    await prisma.products.delete({ where: { id } })
+    await prisma.products.update({ where: { id }, data: { deleted: true } })
   }
 
   static async topSellingProducts(take: number) {
@@ -149,7 +162,8 @@ export class ProductModel {
     // las ventas se obtienen a través de las órdenes
     const orders = await prisma.orders.findMany({
       where: {
-        status: 'PAID'
+        status: 'PAID',
+        deleted: false
       },
       include: {
         order_items: {
@@ -193,12 +207,28 @@ export class ProductModel {
   }
 
   static async countTotalProducts() {
-    const total = await prisma.products.count()
+    const total = await prisma.products.count({
+      where: {
+        deleted: false,
+        status: 'ACTIVE'
+      }
+    })
     return total
   }
 
   static async countTotalProductsLowStock() {
-    const products = await prisma.products.findMany()
+    const products = await prisma.products.findMany({
+      where: {
+        stock: {
+          lte: 0
+        },
+        low_stock: {
+          gt: 0
+        },
+        status: 'ACTIVE',
+        deleted: false
+      }
+    })
     const total = products.filter(product => {
       return product.stock <= product.low_stock && product.status === 'ACTIVE' && product.stock > 0
     }).length
@@ -209,7 +239,8 @@ export class ProductModel {
     const products = await prisma.products.findMany({
       where: {
         stock: 0,
-        status: 'ACTIVE'
+        status: 'ACTIVE',
+        deleted: false
       }
     })
     return products.length

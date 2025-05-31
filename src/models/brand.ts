@@ -7,7 +7,7 @@ export class BrandModel {
 
     if (error) throw new Error(error.message)
 
-    const brand = await prisma.brands.findFirst({ where: { name } })
+    const brand = await prisma.brands.findFirst({ where: { name, deleted: true } })
     if (brand) throw new Error('Brand already exists')
 
     const { id } = await prisma.brands.create({
@@ -28,7 +28,8 @@ export class BrandModel {
       where: {
         name: {
           contains: name,
-        }
+        },
+        deleted: false
       }
     })
 
@@ -53,7 +54,7 @@ export class BrandModel {
     if (!brand) throw new Error('Brand not found')
 
     if (name) {
-      const existingBrand = await prisma.brands.findFirst({ where: { name } })
+      const existingBrand = await prisma.brands.findFirst({ where: { name, deleted: false } })
       if (existingBrand && existingBrand.id !== id) throw new Error('Brand with this name already exists')
     }
 
@@ -72,9 +73,7 @@ export class BrandModel {
     const brand = await prisma.brands.findUnique({ where: { id } })
     if (!brand) throw new Error('Brand not found')
 
-    await prisma.products.deleteMany({ where: { brand_id: id } })
-
-    await prisma.brands.delete({ where: { id } })
+    await prisma.brands.update({ where: { id }, data: { deleted: true } })
 
     return brand
   }

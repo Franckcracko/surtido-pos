@@ -15,9 +15,11 @@ export class OrderModel {
       const product = await prisma.products.findUnique({
         where: { id: item.productId },
       })
+
       if (!product) {
         throw new Error(`Product with ID ${item.productId} not found`)
       }
+      
       if (product.stock < item.quantity) {
         throw new Error(`Insufficient stock for product ${item.productId}`)
       }
@@ -86,7 +88,10 @@ export class OrderModel {
         order_items: true,
         client: true,
       },
-      where,
+      where: {
+        deleted: false,
+        ...where,
+      },
       orderBy: {
         created_at: 'desc',
       },
@@ -100,7 +105,7 @@ export class OrderModel {
         created_at: {
           gte: startDate,
           lte: endDate,
-        },
+        }
       },
       include: {
         order_items: true,
@@ -165,7 +170,7 @@ export class OrderModel {
     }
 
     const allOrders = await prisma.orders.findMany({
-      where: { status: 'PAID' },
+      where: { status: 'PAID', deleted: false },
       select: {
         total_amount: true,
         created_at: true
@@ -222,7 +227,11 @@ export class OrderModel {
   }
 
   static async countTotalOrders() {
-    const total = await prisma.orders.count()
+    const total = await prisma.orders.count({
+      where: {
+        deleted: false,
+      },
+    })
     return total
   }
 
@@ -235,6 +244,7 @@ export class OrderModel {
         created_at: {
           gte: new Date(new Date().setHours(0, 0, 0, 0)),
         },
+        deleted: false,
       },
     })
     return total._sum.total_amount || 0
@@ -247,8 +257,13 @@ export class OrderModel {
         order_items: true,
       },
     })
+
     if (!order) {
       throw new Error(`Order with ID ${id} not found`)
+    }
+
+    if (order.deleted) {
+      throw new Error(`Order with ID ${id} is already deleted`)
     }
 
     await Promise.all(order.order_items.map(async (item) => {
@@ -265,8 +280,11 @@ export class OrderModel {
       }
     }))
 
-    await prisma.orders.delete({
+    await prisma.orders.update({
       where: { id },
+      data: {
+        deleted: true
+      }
     })
   }
 }

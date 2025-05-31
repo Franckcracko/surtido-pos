@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
   const $ = (el) => document.querySelector(el);
+  const $$ = (el) => document.querySelectorAll(el);
 
   const $dropzone = $('#dropzone-file');
 
@@ -101,6 +102,38 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
       alert('Error al actualizar el producto');
+    });
+  });
+
+  $$('.delete-product-btn').forEach((button) => {
+    button.addEventListener('click', async (e) => {
+      e.preventDefault();
+
+      const productId = button.getAttribute('data-id');
+      if (!productId) return;
+
+      const confirmDelete = confirm(
+        '¿Estás seguro de que deseas eliminar este producto?',
+      );
+      if (!confirmDelete) return;
+
+      try {
+        const res = await fetch(`/api/products/${productId}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (res.ok) {
+          location.reload();
+        } else {
+          alert('Error al eliminar el producto');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Ocurrió un error al intentar eliminar el producto');
+      }
     });
   });
 });
